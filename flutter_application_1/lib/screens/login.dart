@@ -64,61 +64,64 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             // --------- Title --------- //
             Text(
-              '¡Bienvenido a Kairos!',
+              '¡Bienvenido a Honor!',
               style: HonorTypography.display,
             ),
             const SizedBox(height: 16),
-            // --------- Subtitle --------- //
-            Text(
-              'Ingresa con tu usuario registrado en sistema',
-              style: HonorTypography.subtitle.copyWith(color: HonorTheme.colors.darkLight),
-            ),
-            const SizedBox(height: 40),
             // --------- Username --------- //
             Container(
-              decoration: BoxDecoration(boxShadow: HonorTheme.shadows.shadowLarge),
-              child: TextFormField(
-                controller: usernameController,
-                keyboardType: TextInputType.name,
-                decoration: InputUtils.getDecoration(
-                  hintText: 'Ingrese su ID de usuario',
-                  prefixIcon: Icon(Iconsax.user, size: 18),
-                ),
+              padding: EdgeInsets.all(20),
+              color: HonorTheme.colors.primaryVariant,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(boxShadow: HonorTheme.shadows.shadowLarge),
+                    child: TextFormField(
+                      controller: usernameController,
+                      keyboardType: TextInputType.name,
+                      decoration: InputUtils.getDecoration(
+                        hintText: 'Ingrese su usuario/Correo',
+                        prefixIcon: Icon(Iconsax.user, size: 18),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  // --------- Password --------- //
+                  Container(
+                    decoration: BoxDecoration(boxShadow: HonorTheme.shadows.shadowLarge),
+                    child: TextFormField(
+                      controller: passwordController,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: true,
+                      decoration: InputUtils.getDecoration(
+                        hintText: 'Ingrese su contraseña',
+                        prefixIcon: Icon(Iconsax.lock, size: 18),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // --------- Login button --------- //
+                  Row(
+                    children: [
+                      HonorButton(
+                        bgColor: HonorTheme.colors.primaryVariant,
+                        textColor: HonorTheme.colors.dark,
+                        buttonSize: ButtonSize.large,
+                        text: 'Registrarse',
+                        onTap: null,
+                      ),
+                      HonorButton(
+                        buttonSize: ButtonSize.large,
+                        text: 'Iniciar sesión',
+                        onTap: () => login(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 30),
-            // --------- Password --------- //
-            Container(
-              decoration: BoxDecoration(boxShadow: HonorTheme.shadows.shadowLarge),
-              child: TextFormField(
-                controller: passwordController,
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
-                decoration: InputUtils.getDecoration(
-                  hintText: 'Ingrese su contraseña',
-                  prefixIcon: Icon(Iconsax.lock, size: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            // --------- Login button --------- //
-            HonorButton(
-              buttonSize: ButtonSize.large,
-              text: 'Iniciar sesión',
-              onTap: () => login(),
             ),
             const SizedBox(height: 45),
-            EasyRichText(
-              'Si tienes problemas para iniciar sesión, '
-              'contacta con el equipo de soporte técnico',
-              defaultStyle: HonorTypography.bodySmall,
-              patternList: [
-                EasyRichTextPattern(
-                  targetString: 'contacta con el equipo de soporte técnico',
-                  style: HonorTypography.bodySmallStrong.copyWith(color: HonorTheme.colors.primary),
-                )
-              ],
-            ),
+            
           ],
         ),
       );
