@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_app/screens/home.dart';
 
-
+typedef HeaderBuilder = Widget Function(
+ BuildContext context,
+ BoxConstraints constraints,
+ double shrinkOffset,
+);
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -17,7 +21,7 @@ class AuthGate extends StatelessWidget {
         if (!snapshot.hasData) {
           return SignInScreen(
            providers: [
-             EmailAuthProvider(),
+            EmailAuthProvider(),
            ],
            headerBuilder: (context, constraints, shrinkOffset) {
              return Padding(
@@ -45,7 +49,15 @@ class AuthGate extends StatelessWidget {
                ),
              );
            },
-
+            sideBuilder: (context, shrinkOffset) {
+             return Padding(
+               padding: const EdgeInsets.all(20),
+               child: AspectRatio(
+                 aspectRatio: 1,
+                 child: Image.asset('flutterfire_300x.png'),
+               ),
+             );
+           },
          ); 
         }
 
