@@ -1,79 +1,96 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/layout/side_drawer.dart';
+import 'package:flutter_app/theme/honor_theme.dart';
 import 'package:flutter_app/widgets/button.dart';
+import 'package:flutter_app/widgets/circular_button.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Aqui tenemos que poner lo de arriva'),
-      ),
-      body: Column
-      (
-        children: 
-        [
-          InkWell(
-            onTap: ()
-            {
+        title: Text('Inicio'),
+        actions: [
+          IconButton(
+            icon: Icon(CupertinoIcons.person),
+            onPressed: () {
+              // Add your onPressed function here
             },
-            child: Container
-            (
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(20),
-              decoration: BoxDecoration
-              (
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text('Go to About', style: TextStyle(color: Colors.white),),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 20),
+          Container(
+            padding: EdgeInsets.all(30),
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: HonorTheme.colors.primaryLight,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                EasyRichText(
+                  'Por pagar: \$100.000 CLP',
+                  defaultStyle: HonorTypography.body,
+                  patternList: [
+                    EasyRichTextPattern(
+                      targetString: '\$100.000',
+                      style: TextStyle(
+                        color: HonorTheme.colors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+              ],
             ),
           ),
-          
-          HonorButton(
-            text: 'Go to About',
-            onTap: ()
-            {
-            },
+          SizedBox(height: 20),
+          Center(
+              child: CircularIconButton(
+            icon: CupertinoIcons.cloud_upload,
+            onPressed: () {},
+            color: HonorTheme.colors.primaryLight,
+            size: 390,
+          )),
+          SizedBox(
+            height: 70,
           ),
-          HonorButton(
-            text: 'Go to Contact',
-            onTap: ()
-            {
-              
-            },
+          Container(
+            height: MediaQuery.of(context).size.height * 0.252,
+            alignment: Alignment.bottomLeft,
+            color: HonorTheme.colors.primaryLight,
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: HonorButton(
+                    buttonSize: ButtonSize.large,
+                    text: 'Estado de pagos',
+                    onTap: () {},
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: HonorButton(
+                    buttonSize: ButtonSize.large,
+                    text: 'Tracking',
+                    onTap: () {},
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children:[
-            DrawerHeader(
-              child: Text('Drawer Header'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Home'),
-              onTap: () {
-                Navigator.pushNamed(context, '/');
-              },
-            ),
-            ListTile(
-              title: Text('About'),
-              onTap: () {
-                Navigator.pushNamed(context, '/about');
-              },
-            ),
-            ListTile(
-              title: Text('Contact'),
-              onTap: () {
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: SideDrawer(),
     );
   }
 }
