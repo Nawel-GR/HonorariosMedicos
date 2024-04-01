@@ -13,11 +13,28 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Inicio'),
         actions: [
-          IconButton(
+          PopupMenuButton(
             icon: Icon(CupertinoIcons.person),
-            onPressed: () {
-              // Add your onPressed function here
-            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('Settings'),
+                  onTap: () {
+                    // Add your onPressed function here
+                  },
+                ),
+              ),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(Icons.help),
+                  title: Text('Help'),
+                  onTap: () {
+                    // Add your onPressed function here
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -50,7 +67,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 40),
           Center(
               child: CircularIconButton(
             icon: CupertinoIcons.cloud_upload,
@@ -58,9 +75,7 @@ class HomeScreen extends StatelessWidget {
             color: HonorTheme.colors.primaryLight,
             size: 390,
           )),
-          SizedBox(
-            height: 70,
-          ),
+          SizedBox(height: 50),
           Container(
             height: MediaQuery.of(context).size.height * 0.252,
             alignment: Alignment.bottomLeft,
