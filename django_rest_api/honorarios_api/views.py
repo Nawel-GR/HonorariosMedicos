@@ -37,46 +37,54 @@ def make_google_consult(token, data_json, url):
 
     try:
         response = requests.post(url, headers=headers, json=data_json)
-
         if response.status_code == 200:
             print("Success")
-            #print("Response:", response.json())
+            return response
         else:
             print(f"Error code: {response.status_code}")
             #print("Message", response.text)
     except Exception as e:
         print(f"Error Catch: {str(e)}")
 
+def make_json(base64):
+    return {
+    "skipHumanReview": "false",
+    "rawDocument": {
+      "mimeType": "application/pdf",
+      "content": f"{base64}"
+    }
+  }
+
+
 class UploadPhoto(APIView):
     def post(self, request, format = None):
-        '''
-        if 'jpg-file' not in request.FILES:
-            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+        #if 'jpg-file' not in request.FILES:
+        #    return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
         
-        jpg_file = request.FILES['jpg-file']
-        '''
-        # Saving the jpg file in b64
-        #json_test = get_test_json()
+        #jpg_file = request.FILES['jpg-file']
+        json_test = make_json(request.data["jpg-file"])
+
 
         # Send the jpg file to google
-        #google_key, url = get_google_key()
+        google_key, url = get_google_key()
 
         if DEBUG:
             print("Good LOG")
-
-        # Receive the jpg file
-        #make_google_consult(google_key, json_test, url)
         
+        # Receive the jpg file
+        google_response = make_google_consult(google_key, json_test, url)
+        print(google_response)
         # Getting the entities keys
-        entities = request.data["document"]["entities"]
-
+        entities = google_response.content.decode()["document"]["entities"]
+        print("asd")
         if DEBUG:
             print("Entities keys")
             for i in entities:
                 print(i.keys())
 
         # Getting the entities keys values
-        entities_values = request.data["document"]["entities"]
+        entities_values = google_response.data["document"]["entities"]
 
         response = map_clinic_alemana(entities_values)
 
