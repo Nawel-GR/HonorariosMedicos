@@ -8,6 +8,7 @@ from rest_framework.response import Response
 import csv
 from django.http import HttpResponse
 from .mapping import map_clinic_alemana
+import json
 
 # import Json key
 from .keys.get_key import get_google_key, get_test_json
@@ -65,7 +66,6 @@ class UploadPhoto(APIView):
         #jpg_file = request.FILES['jpg-file']
         json_test = make_json(request.data["jpg-file"])
 
-
         # Send the jpg file to google
         google_key, url = get_google_key()
 
@@ -74,19 +74,26 @@ class UploadPhoto(APIView):
         
         # Receive the jpg file
         google_response = make_google_consult(google_key, json_test, url)
-        print(google_response)
+        google_decoded = json.loads(google_response.content)
+
+        if DEBUG:
+            print("Google Response")
+            print(google_decoded)
+
+
         # Getting the entities keys
-        entities = google_response.content.decode()["document"]["entities"]
+        entities = google_decoded["document"]["entities"]
         print("asd")
+
         if DEBUG:
             print("Entities keys")
             for i in entities:
-                print(i.keys())
+                print(i['mentionText'])
+                print(i['type'])
 
         # Getting the entities keys values
-        entities_values = google_response.data["document"]["entities"]
 
-        response = map_clinic_alemana(entities_values)
+        response = map_clinic_alemana(entities)
 
         print(response)
 

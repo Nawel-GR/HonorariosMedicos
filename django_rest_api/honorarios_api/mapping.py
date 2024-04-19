@@ -52,7 +52,7 @@ def map_clinic_alemana(entities):
 
         print(entity["type"])
 
-        if type_entity == "Campo-A": # fecha
+        if type_entity == "Campo-F": # fecha
             value = {
                 "fecha" : {
                     "valor" : text_entity,
@@ -62,7 +62,7 @@ def map_clinic_alemana(entities):
 
             json_response["datos"].append(value)
 
-        if type_entity == "Campo-B": # profesional
+        if type_entity == "Campo-R": # profesional
             value = {
                 "profesional" : {
                     "valor" : text_entity,
@@ -72,7 +72,7 @@ def map_clinic_alemana(entities):
 
             json_response["datos"].append(value)
 
-        if type_entity == "Campo-C": # paciente
+        if type_entity == "Campo-P": # paciente
             try:
                 pac = map_c_entity(entity["mentionText"])
                 pac["confidence"] = confidence_entity
@@ -88,9 +88,8 @@ def map_clinic_alemana(entities):
             
             pacients.append(pac)
 
-        if type_entity == "Campo-D": # total pagado
+        if type_entity == "Campo-T": # total pagado
             try:
-                text_entity = text_entity.split(" ")[2] # "836.464 32.040 804.424"
                 text_entity = text_entity.replace(".", "")
                 text_entity = int(text_entity)
             
