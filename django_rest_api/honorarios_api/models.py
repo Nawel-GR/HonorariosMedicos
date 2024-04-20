@@ -1,14 +1,14 @@
 from django.db import models
 
 # Create your models here.
-
-
-# PDF model
-class PDF_model(models.Model):
-    #pdf = models.FileField(upload_to='pdfs/')
+         
+# File model
+class File_model(models.Model):
+    binary = models.CharField(max_length=100, default='')  # file on b64
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=100, default='')
-    clinic = models.CharField(max_length=100, default='')
+    med = models.CharField(max_length=100, default='') # med name
+    clinic = models.CharField(max_length=100, default='') # clinic name
+    file_type = models.CharField(max_length=100, default='') # file type
 
     def __str__(self):
-        return self.name
+        return f"{self.med} - {self.clinic} - {self.uploaded_at}"

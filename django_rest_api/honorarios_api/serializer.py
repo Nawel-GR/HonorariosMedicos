@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from .models import PDF_model
+from .models import File_model
 
-class PDF_serializer(serializers.ModelSerializer):
+
+class File_serializer(serializers.ModelSerializer):
     class Meta:
-        model = PDF_model
+        model = File_model
         fields = '__all__'
-
-

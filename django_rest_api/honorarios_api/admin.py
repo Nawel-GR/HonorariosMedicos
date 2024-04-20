@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PDF_model
+from .models import File_model
 
 # Register your models here.
-admin.site.register(PDF_model)
+admin.site.register(File_model)

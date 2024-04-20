@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .serializer import PDF_serializer
-from .models import PDF_model
+from .serializer import File_serializer
+from .models import File_model
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +9,9 @@ import csv
 from django.http import HttpResponse
 from .mapping import map_clinic_alemana
 import json
+
+from drf_yasg.utils import swagger_auto_schema
+
 
 # import Json key
 from .keys.get_key import get_google_key, get_test_json
@@ -20,11 +23,17 @@ from .Clinicas.clinica_alemana import Clinica_Alemana
 
 DEBUG = True
 
-
-# Create your views here.
-class PDF_view(viewsets.ModelViewSet):
-    serializer_class = PDF_serializer
-    queryset = PDF_model.objects.all()
+class File_view(APIView):
+    @swagger_auto_schema(
+        request_body=File_serializer,
+        responses={200: File_serializer()}
+    )
+    def post(self, request):
+        serializer = File_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 import requests
