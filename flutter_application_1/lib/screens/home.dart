@@ -1,12 +1,18 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/api/api_service.dart';
 import 'package:flutter_app/layout/side_drawer.dart';
+import 'package:flutter_app/screens/values.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
+import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_app/widgets/button.dart';
 import 'package:flutter_app/widgets/circular_button.dart';
+import 'package:pretty_logger/pretty_logger.dart';
 
 class HomeScreen extends StatelessWidget {
+  ApiService apiService = ApiService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,9 +77,29 @@ class HomeScreen extends StatelessWidget {
           Center(
               child: CircularIconButton(
             icon: CupertinoIcons.cloud_upload,
-            onPressed: () {},
+            onPressed: () async {
+              try {
+                await FilePicker.platform
+                    .pickFiles(type: FileType.custom, allowedExtensions: [
+                  'pdf',
+                ]).then((value) {
+                  if (value != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ValuesScreen()),
+                    );
+                  }
+                });
+              } catch (e) {
+                PLog.red('Error al seleccionar el archivo: $e');
+              }
+              // DialogUtils.showSpinner(text: "Enviando imagen");
+              // final response = await apiService.sendPdf();
+
+              // DialogUtils.closeSpinner();
+            },
             color: HonorTheme.colors.primaryLight,
-            size: 390,
+            size: MediaQuery.of(context).size.height * 0.35,
           )),
           SizedBox(height: 50),
           Container(
@@ -82,7 +108,7 @@ class HomeScreen extends StatelessWidget {
             color: HonorTheme.colors.primaryLight,
             child: Column(
               children: [
-                SizedBox(height: 50),
+                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: HonorButton(
