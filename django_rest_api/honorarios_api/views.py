@@ -10,7 +10,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 
 # import Json key
-from .keys.get_key import get_google_key, get_test_json
+from .keys.get_key import get_google_url, get_access_token_old
 
 
 # Clinicas
@@ -50,11 +50,13 @@ def manage_file(data):
     json_test = make_json(b64_file, file_type)
 
     # Send the jpg file to google
-    google_key, url = get_google_key()
+    url = get_google_url()
 
+    google_key = get_access_token_old()
     
     # Receive the jpg file
     google_response = make_google_consult(google_key, json_test, url)
+
     google_decoded = json.loads(google_response.content)
 
     if DEBUG:
