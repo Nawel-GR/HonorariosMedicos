@@ -11,6 +11,22 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+### -------------- Firebase Connections -------------- ###
+import firebase_admin
+from firebase_admin import credentials
+
+ # Firebase settings
+current_path = os.path.dirname(os.path.abspath(__file__))
+parent_path = os.path.dirname(current_path)
+
+print(f"PARENT PATH_ {parent_path}")
+
+cred = credentials.Certificate(f"{parent_path}\\honorarios_api\\keys\\firebase_keys.json")
+firebase_admin.initialize_app(cred)
+
+### -------------- Firebase Connections -------------- ###
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

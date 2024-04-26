@@ -2,22 +2,40 @@ from .serializer import File_serializer
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import HttpResponse
 from .mapping import map_clinic_alemana
 import json
 from .Connections.google_api import make_google_consult, make_json
-
+import os
 from drf_yasg.utils import swagger_auto_schema
-
 
 # import Json key
 from .keys.get_key import get_google_url, get_access_token_old
 
 
 # Clinicas
-from .Clinicas.clinica_alemana import Clinica_Alemana
+from firebase_admin import firestore
 
+from django.views.decorators.csrf import csrf_exempt
 
 DEBUG = True
+
+
+
+@csrf_exempt
+def firebase_test(request):
+    if request.method == 'POST':
+
+        # Reading
+        db = firestore.client()
+        doc_ref = db.collection('doctors').document('Nahuel Gomez')
+        document = doc_ref.get()
+        
+        print(document.to_dict())
+
+        return HttpResponse("Firebase test")
+
+
 
 class File_view(APIView):
     @swagger_auto_schema(
