@@ -3,10 +3,10 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
-from .mapping import map_clinic_alemana
+from .utils.mapping import map_clinic_alemana
+from .utils.crud_firebase import create_document, read_document, update_document, delete_document
 import json
 from .Connections.google_api import make_google_consult, make_json
-import os
 from drf_yasg.utils import swagger_auto_schema
 
 # import Json key
@@ -22,22 +22,22 @@ DEBUG = True
 
 
 
-@csrf_exempt
-def firebase_test(request):
-    if request.method == 'POST':
-
-        # Reading
+class Read_wordek_day(APIView):
+    def get(self, request):
+       
         db = firestore.client()
-        doc_ref = db.collection('doctors').document('Nahuel Gomez')
-        document = doc_ref.get()
-        
-        print(document.to_dict())
+        collection = db.collection("worked_day").document("5547001240427").collection("dayconsults")
+        consults = collection.get()
 
-        return HttpResponse("Firebase test")
+        for consult in consults:
+            print(consult.to_dict()['consult_ref'].get().to_dict())
+             
+
+        return Response("Firebase test", status=status.HTTP_200_OK)
 
 
 
-class File_view(APIView):
+class File_upload(APIView):
     @swagger_auto_schema(
         request_body=File_serializer,
         responses={200: File_serializer()}
