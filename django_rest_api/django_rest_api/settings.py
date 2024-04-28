@@ -21,7 +21,6 @@ from firebase_admin import credentials
 current_path = os.path.dirname(os.path.abspath(__file__))
 parent_path = os.path.dirname(current_path)
 
-print(f"PARENT PATH_ {parent_path}")
 
 cred = credentials.Certificate(f"{parent_path}\\honorarios_api\\keys\\firebase_keys.json")
 firebase_admin.initialize_app(cred)
@@ -146,6 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cors authorization
 #TODO: when its in production change this to allow only the correct origin
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ALLOWED_ORIGINS = [
