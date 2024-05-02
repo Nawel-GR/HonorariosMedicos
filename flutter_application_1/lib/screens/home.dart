@@ -3,135 +3,119 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/api_service.dart';
+import 'package:flutter_app/bloc/bloc.dart';
 import 'package:flutter_app/layout/side_drawer.dart';
+import 'package:flutter_app/screens/layout/header.dart';
 import 'package:flutter_app/screens/values.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
 import 'package:flutter_app/utils/dialog_utils.dart';
 import 'package:flutter_app/widgets/button.dart';
 import 'package:flutter_app/widgets/circular_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pretty_logger/pretty_logger.dart';
 
 class HomeScreen extends StatelessWidget {
   ApiService apiService = ApiService();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Inicio'),
-        actions: [
-          PopupMenuButton(
-            icon: Icon(CupertinoIcons.person),
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
-                  onTap: () {
-                    // Add your onPressed function here
-                  },
+    return BlocBuilder<DataCubit, DataState>(
+      builder: (context, state) {
+        return MainScaffold(
+          selectedItem: 0, // TODO: change this to a list of tabs
+          title: 'Inicio',
+          body: Column(
+            children: [
+              SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.all(30),
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: HonorTheme.colors.primaryLight,
+                  borderRadius: BorderRadius.circular(30),
                 ),
-              ),
-              PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.help),
-                  title: Text('Help'),
-                  onTap: () {
-                    // Add your onPressed function here
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          Container(
-            padding: EdgeInsets.all(30),
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              color: HonorTheme.colors.primaryLight,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                EasyRichText(
-                  'Por pagar: \$100.000 CLP',
-                  defaultStyle: HonorTypography.body,
-                  patternList: [
-                    EasyRichTextPattern(
-                      targetString: '\$100.000',
-                      style: TextStyle(
-                        color: HonorTheme.colors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    EasyRichText(
+                      'Por pagar: \$100.000 CLP',
+                      defaultStyle: HonorTypography.body,
+                      patternList: [
+                        EasyRichTextPattern(
+                          targetString: '\$100.000',
+                          style: TextStyle(
+                            color: HonorTheme.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 40),
-          Center(
-              child: CircularIconButton(
-            icon: CupertinoIcons.cloud_upload,
-            onPressed: () async {
-              try {
-                await FilePicker.platform
-                    .pickFiles(type: FileType.custom, allowedExtensions: [
-                  'pdf',
-                ]).then((value) {
-                  if (value != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ValuesScreen()),
-                    );
+              ),
+              SizedBox(height: 40),
+              Center(
+                  child: CircularIconButton(
+                icon: CupertinoIcons.cloud_upload,
+                onPressed: () async {
+                  try {
+                    await FilePicker.platform
+                        .pickFiles(type: FileType.custom, allowedExtensions: [
+                      'pdf',
+                    ]).then((value) async {
+                      if (value != null) {
+                        DialogUtils.showSpinner(text: "Enviando imagen");
+                        await context.read<DataCubit>().postData().then(
+                          (_) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ValuesScreen()),
+                            );
+                          },
+                        );
+                      }
+                    });
+                  } catch (e) {
+                    print(e);
+                    PLog.red('Error al seleccionar el archivo: $e');
                   }
-                });
-              } catch (e) {
-                PLog.red('Error al seleccionar el archivo: $e');
-              }
-              // DialogUtils.showSpinner(text: "Enviando imagen");
-              // final response = await apiService.sendPdf();
-
-              // DialogUtils.closeSpinner();
-            },
-            color: HonorTheme.colors.primaryLight,
-            size: MediaQuery.of(context).size.height * 0.35,
-          )),
-          SizedBox(height: 50),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.252,
-            alignment: Alignment.bottomLeft,
-            color: HonorTheme.colors.primaryLight,
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: HonorButton(
-                    buttonSize: ButtonSize.large,
-                    text: 'Estado de pagos',
-                    onTap: () {},
-                  ),
+                  DialogUtils.closeSpinner();
+                },
+                color: HonorTheme.colors.primaryLight,
+                size: MediaQuery.of(context).size.height * 0.35,
+              )),
+              SizedBox(height: 50),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.252,
+                alignment: Alignment.bottomLeft,
+                color: HonorTheme.colors.primaryLight,
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: HonorButton(
+                        buttonSize: ButtonSize.large,
+                        text: 'Estado de pagos',
+                        onTap: () {},
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: HonorButton(
+                        buttonSize: ButtonSize.large,
+                        text: 'Tracking',
+                        onTap: () {},
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: HonorButton(
-                    buttonSize: ButtonSize.large,
-                    text: 'Tracking',
-                    onTap: () {},
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-      drawer: SideDrawer(),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }

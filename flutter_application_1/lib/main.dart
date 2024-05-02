@@ -2,12 +2,13 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/auth_gate.dart';
+import 'package:flutter_app/bloc/data/data_cubit.dart';
 import 'package:flutter_app/firebase_options.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
-
 
 void main() async {
   // Ensure that the plugin services are initialized
@@ -21,10 +22,12 @@ void main() async {
   // Locale Date initialization
   await initializeDateFormatting('es_ES', null);
 
-  return runApp(
-     const HonorApp(),
-    
-  );
+  return runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (context) => DataCubit()),
+    ],
+    child: HonorApp(),
+  ));
 }
 
 class HonorApp extends StatelessWidget {
@@ -36,7 +39,7 @@ class HonorApp extends StatelessWidget {
       title: 'HonorMed',
       theme: HonorTheme.lightTheme,
       // routes: honorRoutes,
-      home: const AuthGate() ,
+      home: const AuthGate(),
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
       locale: const Locale('es'),
@@ -44,7 +47,6 @@ class HonorApp extends StatelessWidget {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
-
       ],
     );
   }

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/home.dart';
 
 typedef HeaderBuilder = Widget Function(
- BuildContext context,
- BoxConstraints constraints,
- double shrinkOffset,
+  BuildContext context,
+  BoxConstraints constraints,
+  double shrinkOffset,
 );
 
 class AuthGate extends StatelessWidget {
@@ -20,42 +20,42 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return SignInScreen(
-           providers: [
-            EmailAuthProvider(),
-           ],
-           headerBuilder: (context, constraints, shrinkOffset) {
-             return Padding(
-               padding: const EdgeInsets.all(20),
-               child: SizedBox.shrink()
-             );
-           },
-           subtitleBuilder: (context, action) {
-             return Padding(
-               padding: const EdgeInsets.symmetric(vertical: 8.0),
-               child: action == AuthAction.signIn
-                   ? const Text('Bienvenido a HonorMed, por favor inicia sesión!')
-                   : const Text('Bienvenido a HonorMed, por favor registrate!'),
-             );
-           },
-           footerBuilder: (context, action) {
-             return const Padding(
-               padding: EdgeInsets.only(top: 16),
-               child: Text(
-                 'Al registrate aceptas los términos y condiciones de uso.',
-                 style: TextStyle(color: Colors.grey),
-               ),
-             );
-           },
+            providers: [
+              EmailAuthProvider(),
+            ],
+            headerBuilder: (context, constraints, shrinkOffset) {
+              return Padding(
+                  padding: const EdgeInsets.all(20), child: SizedBox.shrink());
+            },
+            subtitleBuilder: (context, action) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: action == AuthAction.signIn
+                    ? const Text(
+                        'Bienvenido a HonorMed, por favor inicia sesión!')
+                    : const Text(
+                        'Bienvenido a HonorMed, por favor registrate!'),
+              );
+            },
+            footerBuilder: (context, action) {
+              return const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  'Al registrate aceptas los términos y condiciones de uso.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              );
+            },
             sideBuilder: (context, shrinkOffset) {
-             return Padding(
-               padding: const EdgeInsets.all(20),
-               child: AspectRatio(
-                 aspectRatio: 1,
-                 child: Image.asset('flutterfire_300x.png'),
-               ),
-             );
-           },
-         ); 
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset('pato.jpg'),
+                ),
+              );
+            },
+          );
         }
 
         return HomeScreen();

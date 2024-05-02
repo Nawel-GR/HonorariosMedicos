@@ -27,5 +27,9 @@ class DataCubit extends Cubit<DataState> {
     //TODO: Implementar la llamada al servicio
   }
 
-  Future postData() async {}
+  Future postData() async {
+    dynamic data = await _apiService.sendPdf();
+    // ClinicData clinicData = ClinicData.fromJson(data);
+    // emitState(clinicData: clinicData,);
+  }
 }
