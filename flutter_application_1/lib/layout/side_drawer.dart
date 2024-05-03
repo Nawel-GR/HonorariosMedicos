@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/detail.dart';
+import 'package:flutter_app/screens/home.dart';
+import 'package:flutter_app/theme/honor_theme.dart';
 
 class SideDrawer extends StatelessWidget {
   @override
@@ -9,7 +13,7 @@ class SideDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: HonorTheme.colors.primary,
             ),
             child: Text(
               'HonorMed',
@@ -23,7 +27,21 @@ class SideDrawer extends StatelessWidget {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
               // Handle drawer item tap
+            },
+          ),
+          ListTile(
+            leading: Icon(CupertinoIcons.money_dollar_circle_fill),
+            title: Text('Detalle'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DetailScreen()),
+              );
             },
           ),
           ListTile(

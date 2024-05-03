@@ -38,6 +38,13 @@ class HonorTypography {
     decorationThickness: 2,
     decorationStyle: TextDecorationStyle.solid,
   );
+  static TextStyle header = GoogleFonts.inter(
+    fontSize: 24,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.04 * 13.4,
+    decorationThickness: 2,
+    decorationStyle: TextDecorationStyle.solid,
+  );
 
   static TextStyle subtitleStrong = GoogleFonts.inter(
     fontSize: 15.6,
@@ -136,7 +143,8 @@ class HonorColors {
   // Primary colors
   final Color primary = ColorUtils.hexToColor('#6797C4');
   final Color primaryLight = ColorUtils.hexToColor('#6797C4').withOpacity(0.7);
-  final Color primaryLighter = ColorUtils.hexToColor('#6797C4').withOpacity(0.59);
+  final Color primaryLighter =
+      ColorUtils.hexToColor('#6797C4').withOpacity(0.59);
   final Color primaryLightest = ColorUtils.hexToColor('#94C3E5');
   final Color primaryVariant = ColorUtils.hexToColor('#95A9BC');
   final Color primaryVariantLight = ColorUtils.hexToColor('#C3C3C3');
@@ -209,10 +217,12 @@ class HonorSpacing {
   );
 
   /// The default body padding X (28)
-  final EdgeInsets bodyPaddingHorizontal = const EdgeInsets.symmetric(horizontal: 28);
+  final EdgeInsets bodyPaddingHorizontal =
+      const EdgeInsets.symmetric(horizontal: 28);
 
   /// The default body padding Y (28)
-  final EdgeInsets bodyPaddingVertical = const EdgeInsets.symmetric(vertical: 28);
+  final EdgeInsets bodyPaddingVertical =
+      const EdgeInsets.symmetric(vertical: 28);
 
   // Inputs
   final EdgeInsets inputPadding = const EdgeInsets.symmetric(
@@ -250,7 +260,8 @@ class HonorTheme {
 
   static final ThemeData lightTheme = ThemeData.light().copyWith(
     primaryColor: colors.primary,
-    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: colors.primaryLight),
+    colorScheme:
+        ColorScheme.fromSwatch().copyWith(secondary: colors.primaryLight),
     scaffoldBackgroundColor: colors.white,
     splashColor: colors.primaryLight.withOpacity(0.4),
     highlightColor: colors.primaryLight.withOpacity(0.4),
@@ -288,10 +299,12 @@ class HonorTheme {
       backgroundColor: colors.primary,
       selectedItemColor: colors.white,
       selectedIconTheme: const IconThemeData(size: 28),
-      selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+      selectedLabelStyle:
+          const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
       unselectedItemColor: colors.primaryLight,
       unselectedIconTheme: const IconThemeData(size: 28),
-      unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      unselectedLabelStyle:
+          const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       elevation: 0,
     ),
 
@@ -304,7 +317,8 @@ class HonorTheme {
             overlayColor: MaterialStateProperty.all(colors.overlay),
             backgroundColor: MaterialStateProperty.all(colors.primary),
             foregroundColor: MaterialStateProperty.all(colors.white),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             )))),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -312,7 +326,8 @@ class HonorTheme {
             overlayColor: MaterialStateProperty.all(colors.overlay),
             backgroundColor: MaterialStateProperty.all(colors.primary),
             foregroundColor: MaterialStateProperty.all(colors.white),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             )))),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -320,7 +335,8 @@ class HonorTheme {
             overlayColor: MaterialStateProperty.all(colors.overlay),
             backgroundColor: MaterialStateProperty.all(colors.primary),
             foregroundColor: MaterialStateProperty.all(colors.white),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             )))),
     // List Tiles
@@ -354,11 +370,13 @@ class HonorTheme {
     ),
     // Toasts
     snackBarTheme: SnackBarThemeData(
-        backgroundColor: colors.dark, contentTextStyle: HonorTypography.body.copyWith(color: colors.white)),
+        backgroundColor: colors.dark,
+        contentTextStyle: HonorTypography.body.copyWith(color: colors.white)),
     // Alerts
     dialogTheme: DialogTheme(
       titleTextStyle: HonorTypography.subtitle.copyWith(color: colors.dark),
-      contentTextStyle: HonorTypography.body.copyWith(color: colors.darkLighter),
+      contentTextStyle:
+          HonorTypography.body.copyWith(color: colors.darkLighter),
       elevation: 40,
     ),
     // Tooltips

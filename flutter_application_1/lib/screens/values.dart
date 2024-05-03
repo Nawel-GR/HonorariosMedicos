@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app/api/api_service.dart';
 import 'package:flutter_app/bloc/bloc.dart';
 import 'package:flutter_app/screens/layout/header.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
+import 'package:flutter_app/utils/text_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ValuesScreen extends StatelessWidget {
@@ -23,7 +25,7 @@ class ValuesScreen extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 50),
                   child: Text(
-                    "Clinica Alemana archivo N°1",
+                    "Clínica Alemana archivo N°1",
                     style: HonorTypography.titleLarge,
                   ),
                 )
@@ -33,19 +35,16 @@ class ValuesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: HonorTheme.colors.primaryLight),
-                  child: SizedBox(
-                    width: 500, //TODO: change this to mediaquery
-                    height: 80,
-                    child: Center(
-                        child: Text(
-                      "13917203-5  - Miércoles 12/10/2022 al Miércoles 12/10/2022",
-                      style: HonorTypography.subtitleStrong,
-                    )),
-                  ),
+                  child: Center(
+                      child: Text(
+                    "13917203-5  - Miércoles 12/10/2022 al Miércoles 12/10/2022",
+                    style: HonorTypography.subtitleStrong,
+                  )),
                 )
               ],
             ),
@@ -56,6 +55,7 @@ class ValuesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -70,13 +70,19 @@ class ValuesScreen extends StatelessWidget {
                                     color: HonorTheme.colors.darkLighter,
                                     width: 1))),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text("PRIETO OVALLE GREGORIO:"),
                             SizedBox(
-                              width: 350,
+                              width: MediaQuery.of(context).size.width * 0.70,
+                              child: Text(
+                                "${TextUtils.capitalizeFirstLetter("PRIETO OVALLE GREGORIO")}:",
+                                style: HonorTypography.body,
+                              ),
                             ),
-                            Text("\$91.499")
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$91.499"))
                           ],
                         ),
                       ),
@@ -89,11 +95,14 @@ class ValuesScreen extends StatelessWidget {
                                     width: 1))),
                         child: Row(
                           children: [
-                            Text("DOUGNAC SEPULVEDA MARIANNE VICTORIA:"),
                             SizedBox(
-                              width: 230,
-                            ),
-                            Text("\$91.499")
+                                width: MediaQuery.of(context).size.width * 0.70,
+                                child: Text(
+                                    "${TextUtils.capitalizeFirstLetter("DOUGNAC SEPULVEDA MARIANNE VICTORIA")}:")),
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$91.499"))
                           ],
                         ),
                       ),
@@ -106,11 +115,14 @@ class ValuesScreen extends StatelessWidget {
                                     width: 1))),
                         child: Row(
                           children: [
-                            Text("ARIZTIA SILVA ANDRES"),
                             SizedBox(
-                              width: 390,
-                            ),
-                            Text("\$73.199")
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: Text(
+                                    "${TextUtils.capitalizeFirstLetter("ARIZTIA SILVA ANDRES")}:")),
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$73.199"))
                           ],
                         ),
                       ),
@@ -123,11 +135,14 @@ class ValuesScreen extends StatelessWidget {
                                     width: 1))),
                         child: Row(
                           children: [
-                            Text("PALMA BAEZA ELIAN AARON"),
                             SizedBox(
-                              width: 350,
-                            ),
-                            Text("\$73.199")
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: Text(
+                                    "${TextUtils.capitalizeFirstLetter("PALMA BAEZA ELIAN AARON")}:")),
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$73.199"))
                           ],
                         ),
                       ),
@@ -140,28 +155,29 @@ class ValuesScreen extends StatelessWidget {
                                     width: 1))),
                         child: Row(
                           children: [
-                            Text("PEREZ BUENO JOAQUIN IGNACIO"),
                             SizedBox(
-                              width: 320,
-                            ),
-                            Text("\$91.499")
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: Text(
+                                    "${TextUtils.capitalizeFirstLetter("PEREZ BUENO JOAQUIN IGNACIO")}:")),
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$91.499"))
                           ],
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
                         child: Row(
                           children: [
-                            Text("SANCHEZ CORONADO RODRIGO GABRIEL"),
                             SizedBox(
-                              width: 260,
-                            ),
-                            Text("\$91.499")
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: Text(
+                                    "${TextUtils.capitalizeFirstLetter("SANCHEZ CORONADO RODRIGO GABRIEL")}:")),
+                            Container(
+                                alignment: Alignment.centerRight,
+                                width: MediaQuery.of(context).size.width * 0.20,
+                                child: Text("\$91.499"))
                           ],
                         ),
                       ),
