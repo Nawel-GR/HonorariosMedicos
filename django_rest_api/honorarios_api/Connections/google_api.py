@@ -19,6 +19,7 @@ def make_google_consult(token, data_json, url):
 
     try:
         response = requests.post(url, headers=headers, json=data_json)
+
         if response.status_code == 200:
             print("Success")
             return response
@@ -41,9 +42,9 @@ def make_json(base64, file_type):
         json -- The json with the base64 file
     """
     return {
-    "skipHumanReview": "false",
+    "skipHumanReview": "true",
     "rawDocument": {
-      "mimeType": file_type,
+      "mimeType": f"application/{file_type}",
       "content": f"{base64}"
     }
   }
