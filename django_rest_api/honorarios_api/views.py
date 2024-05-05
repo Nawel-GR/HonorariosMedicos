@@ -20,7 +20,25 @@ from django.views.decorators.csrf import csrf_exempt
 
 DEBUG = True
 
+class Create_Doctor(APIView):
+    def post(self, request):
+        try:
+            data = request.data
+            
+            # Getting the data
+            d_name = data["names"]
+            d_lastname = data["last_names"]
+            d_rut = data["rut"]
+            clinic = data["clinic"]
 
+
+            # Creating the document on firebase
+
+
+            return Response("Doctor created", status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 class Read_wordek_day(APIView):
     def get(self, request):
@@ -35,7 +53,20 @@ class Read_wordek_day(APIView):
 
         return Response("Firebase test", status=status.HTTP_200_OK)
 
+class Create_wordek_day(APIView):
+    def post(self, request):
+        db = firestore.client()
 
+        med_rut = "5547"
+        clinic = "001"
+        date = "240427"
+
+        doc = f"{med_rut}{clinic}{date}"
+
+        collection = db.collection("worked_day").document(doc).collection("dayconsults")
+        collection.document("3").set({"consult_ref": "Test"})
+
+        return Response("Firebase test", status=status.HTTP_200_OK)
 
 class File_upload(APIView):
     @swagger_auto_schema(
@@ -71,8 +102,9 @@ def manage_file(data):
     url = get_google_url()
 
     google_key = get_access_token_old()
-    
+
     # Receive the jpg file
+
     google_response = make_google_consult(google_key, json_test, url)
 
     google_decoded = json.loads(google_response.content)
