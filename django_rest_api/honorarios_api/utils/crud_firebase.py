@@ -23,7 +23,7 @@ def read_document(collection, document_id):
 def create_document(collection, document_data):
     db = firestore.client()
     doc_ref = db.collection(collection).document()
-    doc_ref.set(document_data)
+    doc_ref.add(document_data)
     print('Document created with ID:', doc_ref.id)
 
 # Update a document in Firestore
