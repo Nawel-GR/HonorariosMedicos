@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
 from .utils.mapping import map_clinic_alemana
-from .utils.crud_firebase import create_document, read_document, update_document, delete_document
+from .utils.crud_firebase import create_document, read_document, create_worked_day, create_consults
 import json
 from .Connections.google_api import make_google_consult, make_json
 from drf_yasg.utils import swagger_auto_schema
@@ -22,53 +22,38 @@ DEBUG = True
 
 class Create_Doctor(APIView):
     def post(self, request):
-        try:
-            data = request.data
-            
-            # Getting the data
-            d_name = data["names"]
-            d_lastname = data["last_names"]
-            d_rut = data["rut"]
-            clinic = data["clinic"]
+
+        data = request.data
+        
+        # Getting the data
+        d_name = data["names"]
+        d_lastname = data["last_names"]
+        d_rut = data["rut"]
+        clinic = data["clinic_id"]
+
+        # Verifying if the data is correct
+        if len(d_rut) != 8:
+            return Response("Rut is not on a correct format", status=status.HTTP_400_BAD_REQUEST)
 
 
-            # Creating the document on firebase
+        # Creating the document on firebase
+        document_name = f"{d_rut[:-4]}{clinic}"
+        document_data = {
+            "names": d_name,
+            "last_names": d_lastname,
+            "rut": d_rut,
+        }
 
+        # Verifying if the doctor exists
+        if not read_document("doctors", document_name):
+            create_document("doctors", document_data, document_name)
 
-            return Response("Doctor created", status=status.HTTP_200_OK)
+        else:
+            return Response("Doctor already exists", status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response("Doctor created", status=status.HTTP_200_OK)
 
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-
-class Read_wordek_day(APIView):
-    def get(self, request):
-       
-        db = firestore.client()
-        collection = db.collection("worked_day").document("5547001240427").collection("dayconsults")
-        consults = collection.get()
-
-        for consult in consults:
-            print(consult.to_dict()['consult_ref'].get().to_dict())
-             
-
-        return Response("Firebase test", status=status.HTTP_200_OK)
-
-class Create_wordek_day(APIView):
-    def post(self, request):
-        db = firestore.client()
-
-        med_rut = "5547"
-        clinic = "001"
-        date = "240427"
-
-        doc = f"{med_rut}{clinic}{date}"
-
-        collection = db.collection("worked_day").document(doc).collection("dayconsults")
-        collection.document("3").set({"consult_ref": "Test"})
-
-        return Response("Firebase test", status=status.HTTP_200_OK)
-
-class File_upload(APIView):
+class File_extraction(APIView):
     @swagger_auto_schema(
         request_body=File_serializer,
         responses={200: File_serializer()}
@@ -78,15 +63,13 @@ class File_upload(APIView):
         if serializer.is_valid():
             #serializer.save()
             try:
-                return manage_file(serializer.data)
+                return extract_information(serializer.data)
             except Exception as e:
                 return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
-
-def manage_file(data):
+def extract_information(data):
 
     if DEBUG:
         print("Received file")
@@ -136,3 +119,16 @@ def manage_file(data):
 
     # return response
     return Response(response, status=status.HTTP_200_OK)
+
+class File_upload(APIView):
+    
+    def post(self, request):
+        
+        # Creation of the consult
+        #create_consults("5547001", values_l)
+
+        # modify create_consults
+        # to generate the previous instances of each consult
+        # after that, create the worked day with the references of the consults
+
+        return
