@@ -8,7 +8,7 @@ def map_clinic_alemana(entities):
     def map_c_entity(entity):
         """
         {
-            "nombre" : "name",
+            "name" : "name",
             "total" : int,
             "opago" : int,
         }
@@ -28,7 +28,7 @@ def map_clinic_alemana(entities):
             else:
                 break
         pacient = {
-            "nombre" : name[1:],
+            "name" : name[1:],
             "total" : int(total),
             "opago" : int(opago),
         }
@@ -37,8 +37,8 @@ def map_clinic_alemana(entities):
     
     # Create a empty json
     json_response = {
-        "clinica" : "Clinica Alemana",
-        "datos" : {
+        "clinic" : "Clinica Alemana",
+        "data" : {
 
         }
     }
@@ -54,19 +54,19 @@ def map_clinic_alemana(entities):
 
         if type_entity == "Campo-F": # fecha
             value = {
-                    "valor" : text_entity,
+                    "value" : text_entity,
                     "confidence" : float(confidence_entity)
             }
 
-            json_response["datos"]["date"] = value
+            json_response["data"]["date"] = value
 
         if type_entity == "Campo-R": # profesional
             value = {
-                    "valor" : text_entity,
+                    "value" : text_entity,
                     "confidence" : float(confidence_entity)
             }
 
-            json_response["datos"]["profesional"] = value
+            json_response["data"]["profesional"] = value
 
         if type_entity == "Campo-P": # paciente
             try:
@@ -76,7 +76,7 @@ def map_clinic_alemana(entities):
             except Exception as e:
                 print(e)
                 pac = {
-                    "nombre" : "Error",
+                    "name" : "Error",
                     "total" : 0,
                     "opago" : 0,
                     "confidence" : 0.01
@@ -94,13 +94,13 @@ def map_clinic_alemana(entities):
                 confidence_entity = 0.01
             
             value = {
-                    "valor" : text_entity,
+                    "value" : text_entity,
                     "confidence" : float(confidence_entity)
             }
 
-            json_response["datos"]["total"] = value
+            json_response["data"]["total"] = value
 
 
-    json_response["datos"]["pacients"] =  pacients
+    json_response["data"]["pacients"] =  pacients
 
     return json_response
