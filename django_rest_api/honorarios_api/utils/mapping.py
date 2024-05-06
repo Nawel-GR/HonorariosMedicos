@@ -38,9 +38,9 @@ def map_clinic_alemana(entities):
     # Create a empty json
     json_response = {
         "clinica" : "Clinica Alemana",
-        "datos" : [
+        "datos" : {
 
-        ]
+        }
     }
 
     pacients = []
@@ -54,23 +54,19 @@ def map_clinic_alemana(entities):
 
         if type_entity == "Campo-F": # fecha
             value = {
-                "fecha" : {
                     "valor" : text_entity,
                     "confidence" : float(confidence_entity)
-                }
             }
 
-            json_response["datos"].append(value)
+            json_response["datos"]["date"] = value
 
         if type_entity == "Campo-R": # profesional
             value = {
-                "profesional" : {
                     "valor" : text_entity,
                     "confidence" : float(confidence_entity)
-                }
             }
 
-            json_response["datos"].append(value)
+            json_response["datos"]["profesional"] = value
 
         if type_entity == "Campo-P": # paciente
             try:
@@ -98,15 +94,13 @@ def map_clinic_alemana(entities):
                 confidence_entity = 0.01
             
             value = {
-                "totalpagado" : {
                     "valor" : text_entity,
                     "confidence" : float(confidence_entity)
-                }
             }
 
-            json_response["datos"].append(value)
+            json_response["datos"]["total"] = value
 
 
-    json_response["datos"].append(pacients)
+    json_response["datos"]["pacients"] =  pacients
 
     return json_response
