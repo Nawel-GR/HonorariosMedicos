@@ -1,10 +1,10 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import  File_upload, Read_wordek_day,Create_wordek_day
+from .views import  File_extraction, File_upload, Create_Doctor
 
 
 urlpatterns = [
-    path('upload-file/', File_upload.as_view(), name='upload_jpg'),
-    path('get-worked-day/', Read_wordek_day.as_view(), name='read_wordek_day'),
-    path('create-worked-day/', Create_wordek_day.as_view(), name='create_wordek_day'),
+    path('upload-file/', File_extraction.as_view(), name='upload_jpg'),
+    path('upload-firebase/', File_upload.as_view(), name='upload_firebase'),
+    path("Create-Doctor/", Create_Doctor.as_view(), name="Create-Doctor"),
 ]
