@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/api/api_service.dart';
 import 'package:flutter_app/bloc/bloc.dart';
+import 'package:flutter_app/models/data.dart';
 import 'package:flutter_app/screens/layout/header.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
 import 'package:flutter_app/utils/text_utils.dart';
@@ -42,7 +43,7 @@ class ValuesScreen extends StatelessWidget {
                       color: HonorTheme.colors.primaryLight),
                   child: Center(
                       child: Text(
-                    "13917203-5  - Miércoles 12/10/2022 al Miércoles 12/10/2022",
+                    "${state.clinicData!.professional.valor}  - ${state.clinicData!.date.valor}",
                     style: HonorTypography.subtitleStrong,
                   )),
                 )
@@ -62,123 +63,43 @@ class ValuesScreen extends StatelessWidget {
                       color: HonorTheme.colors.primaryLight),
                   child: Column(
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.70,
-                              child: Text(
-                                "${TextUtils.capitalizeFirstLetter("PRIETO OVALLE GREGORIO")}:",
-                                style: HonorTypography.body,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight:
+                                MediaQuery.of(context).size.height * 0.30),
+                        child: ListView.separated(
+                          separatorBuilder: (context, i) =>
+                              const SizedBox(height: 4),
+                          itemCount: state.clinicData!.patients.length,
+                          itemBuilder: (context, i) {
+                            final Patient user = state.clinicData!.patients[i];
+                            return Container(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(
+                                          color: HonorTheme.colors.darkLighter,
+                                          width: 1))),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.70,
+                                    child: Text(
+                                      "${TextUtils.capitalizeFirstLetter(user.nombre)}:",
+                                      style: HonorTypography.body,
+                                    ),
+                                  ),
+                                  Container(
+                                      alignment: Alignment.centerRight,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.20,
+                                      child: Text("\$${user.total}"))
+                                ],
                               ),
-                            ),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$91.499"))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.70,
-                                child: Text(
-                                    "${TextUtils.capitalizeFirstLetter("DOUGNAC SEPULVEDA MARIANNE VICTORIA")}:")),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$91.499"))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Text(
-                                    "${TextUtils.capitalizeFirstLetter("ARIZTIA SILVA ANDRES")}:")),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$73.199"))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Text(
-                                    "${TextUtils.capitalizeFirstLetter("PALMA BAEZA ELIAN AARON")}:")),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$73.199"))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: HonorTheme.colors.darkLighter,
-                                    width: 1))),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Text(
-                                    "${TextUtils.capitalizeFirstLetter("PEREZ BUENO JOAQUIN IGNACIO")}:")),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$91.499"))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Text(
-                                    "${TextUtils.capitalizeFirstLetter("SANCHEZ CORONADO RODRIGO GABRIEL")}:")),
-                            Container(
-                                alignment: Alignment.centerRight,
-                                width: MediaQuery.of(context).size.width * 0.20,
-                                child: Text("\$91.499"))
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ],
