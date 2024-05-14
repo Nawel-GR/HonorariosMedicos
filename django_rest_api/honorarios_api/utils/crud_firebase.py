@@ -19,6 +19,30 @@ def read_document(collection, document_id):
     except:
         return 0
 
+# get a document reference from Firestore
+def read_document_reference(collection, document_id):
+    """
+    Args : 
+    """
+    try:
+        db = firestore.client()
+        doc_ref = db.collection(collection).document(document_id)
+        
+        return doc_ref
+    except:
+        return None
+    
+# create a subcollection
+def create_subcollection(doc_ref, subcollection_name, document_name, params):
+    """
+    Args : 
+    """
+    try:
+        subcollection = doc_ref.collection(subcollection_name).document(document_name)
+        subcollection.set(params)
+    except Exception as e:
+        print(e)
+
 # Create a new document in Firestore
 def create_document(collection, document_data, document_name):
     try:
@@ -27,6 +51,7 @@ def create_document(collection, document_data, document_name):
         doc_ref.set(document_data)
     
     except Exception as e:
+        print("consulta no creada")
         print(e)
 
 # Update a document in Firestore
@@ -45,20 +70,6 @@ def delete_document(collection, document_id):
     doc_ref = db.collection(collection).document(document_id)
     doc_ref.delete()
     print('Document deleted successfully!')
-
-def create_consults(worked_day_name, values_l):
-    """ Upload the consults to the firebase
-    Args :
-        worked_day_name (str): The name of the worked day
-        values_l (list) The list of consults
-    Returns:
-        Response: The response of the request
-    """
-    db = firestore.client()
-
-    for i in range(len(values_l)):
-        collection = db.collection("worked_day").document(worked_day_name).collection("dayconsults")
-        collection.document(str(i)).set(values_l[i])
 
 def create_worked_day(doctor_id, clinic_id, document_name):
     db = firestore.client()
