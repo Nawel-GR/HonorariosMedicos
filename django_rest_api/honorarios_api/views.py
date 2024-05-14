@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
 from .utils.mapping import map_clinic_alemana
-from .utils.crud_firebase import create_document, read_document, create_worked_day, create_consults
+from .utils.crud_firebase import create_document, read_document, create_worked_day, read_document_reference, create_subcollection
 import json
 from .Connections.google_api import make_google_consult, make_json
 from drf_yasg.utils import swagger_auto_schema
@@ -123,12 +123,66 @@ def extract_information(data):
 class File_upload(APIView):
     
     def post(self, request):
+
+        data = request.data
+
+        # Getting the data
+        clinic = data["clinic"] #Exists
+
+        #TODO create get clinic id
+        clinic_id = "001"
+
+        professional = data["data"]["profesional"]["value"]
+        code_id = professional.split("-")[0][:-4]
+
+        profesional_id = f"{code_id}{clinic_id}"
+
+        date = data["data"]["date"]["value"]
+
+        #TODO create a get date
+        date_o = date.split(" ")[1].replace('/', '')
+        date_yymmdd = f"{date_o[6:]}{date_o[2:4]}{date_o[:2]}"
+
+
+        total = data["data"]["total"]["value"]
+
+        # Create worked day
+        doc_name = f"{profesional_id}{date_yymmdd}"
+        create_worked_day(profesional_id, clinic_id, doc_name)
+
+        print(f"WORKDED DAY CREATED {doc_name}")
+
+        worked_day_ref = read_document_reference("worked_day", doc_name)
+
         
-        # Creation of the consult
-        #create_consults("5547001", values_l)
+        # Adding patients
+        patient_list = data["data"]["pacients"]
 
-        # modify create_consults
-        # to generate the previous instances of each consult
-        # after that, create the worked day with the references of the consults
+        i = 1
+        for patient in patient_list:
+            name = patient["name"]
+            name = name.split(" ")
 
-        return
+            # get first letters and make a string
+            name = "".join([i[0] for i in name])
+            
+            if len(name) < 4:
+                name+='x'
+
+            #TODO ORDER THE NAMES AND LASTNAMES
+            values ={
+                "names" : patient["name"],
+            }
+
+            worked_name = f"{name}{profesional_id}{date_yymmdd}"
+
+            create_document("consult", values, worked_name)
+
+            p_ref = read_document_reference("consult", worked_name)
+
+
+            create_subcollection(worked_day_ref, "dayconsults", str(i), {"consult_ref" : p_ref})
+            i+=1
+
+
+        return Response("File uploaded", status=status.HTTP_200_OK)
