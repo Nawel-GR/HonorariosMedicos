@@ -73,15 +73,15 @@ class HomeScreen extends StatelessWidget {
                     ]).then((value) async {
                       if (value != null) {
                         DialogUtils.showSpinner(text: "Enviando imagen");
-                        // await context.read<DataCubit>().postData().then(
-                        //   (_) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ValuesScreen()),
+                        await context.read<DataCubit>().postData().then(
+                          (_) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ValuesScreen()),
+                            );
+                          },
                         );
-                        // },
-                        // )
                       }
                     });
                   } catch (e) {

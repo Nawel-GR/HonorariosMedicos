@@ -39,7 +39,7 @@ class HonorTypography {
     decorationStyle: TextDecorationStyle.solid,
   );
   static TextStyle header = GoogleFonts.inter(
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.04 * 13.4,
     decorationThickness: 2,
