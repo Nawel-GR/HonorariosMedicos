@@ -1,40 +1,10 @@
 import json
 
 THRESHOLD = 0.2
-
+DEBUG = True
 
 def map_clinic_alemana(entities):
 
-    def map_c_entity(entity):
-        """
-        {
-            "name" : "name",
-            "total" : int,
-            "opago" : int,
-        }
-        """
-        # "24/05/2023 2305553492 MONTENEGRO ERRAZURIZ MARIA JESUS 2401001 CONSULTA MÉDICA PSIQUIATRÍA, ELECTIVA 24/05/2023 C021C07316 CONSULTA SIQUIATRIA 104.558 4.005 100.553"
-        entity = entity.split(" ")
-
-        opago = entity[1]
-        total = entity[-1].replace(".", "")
-        print("valores")
-        print(opago)
-        print(total)
-        name = ""
-        for val in entity[2:]:
-            if not val.isnumeric():
-                name += f" {val}"
-            else:
-                break
-        pacient = {
-            "name" : name[1:],
-            "total" : int(total),
-            "opago" : int(opago),
-        }
-        print(name[1:])
-        return pacient
-    
     # Create a empty json
     json_response = {
         "clinic" : "Clinica Alemana",
@@ -43,64 +13,72 @@ def map_clinic_alemana(entities):
         }
     }
 
-    pacients = []
+    patients = []
 
     for entity in entities:
+        if DEBUG:
+            print("ENTITY VALUE:")
+            print(entity)
+            print("END")
         type_entity = entity["type"]
-        text_entity = entity["mentionText"]
         confidence_entity = entity["confidence"]
 
-        print(entity["type"])
+        if type_entity == "Paciente":
+            properties = entity["properties"]
 
-        if type_entity == "Campo-F": # fecha
-            value = {
-                    "value" : text_entity,
-                    "confidence" : float(confidence_entity)
+            values = {}
+            for prop in properties:
+                values[prop["type"]] = {
+                    "value" : prop["mentionText"],
+                    "confidence" : prop["confidence"]
+                }
+
+            patients.append(values)
+
+        elif type_entity == "Fecha":
+            values = {
+                "value" : entity["mentionText"],
+                "confidence" : confidence_entity
             }
 
-            json_response["data"]["date"] = value
+            json_response["data"]["date"] = values
 
-        if type_entity == "Campo-R": # profesional
-            value = {
-                    "value" : text_entity,
-                    "confidence" : float(confidence_entity)
-            }
+        elif type_entity == 'Pagos':
+            properties = entity["properties"]
 
-            json_response["data"]["profesional"] = value
-
-        if type_entity == "Campo-P": # paciente
-            try:
-                pac = map_c_entity(entity["mentionText"])
-                pac["confidence"] = confidence_entity
-            
-            except Exception as e:
-                print(e)
-                pac = {
-                    "name" : "Error",
-                    "total" : 0,
-                    "opago" : 0,
-                    "confidence" : 0.01
+            values = {}
+            for prop in properties:
+                values[prop["type"]] = {
+                    "value" : int(prop["mentionText"].replace('.','')),
+                    "confidence" : prop["confidence"]
                 }
             
-            pacients.append(pac)
+            json_response["data"]["total"] = values
 
-        if type_entity == "Campo-T": # total pagado
-            try:
-                text_entity = text_entity.replace(".", "")
-                text_entity = int(text_entity)
-            
-            except Exception as e:
-                text_entity = 0
-                confidence_entity = 0.01
-            
-            value = {
-                    "value" : text_entity,
-                    "confidence" : float(confidence_entity)
-            }
+        elif type_entity == 'Medico':
+            properties = entity["properties"]
 
-            json_response["data"]["total"] = value
+            values = {}
+            for prop in properties:
+                values[prop["type"]] = {
+                    "value" : prop["mentionText"],
+                    "confidence" : prop["confidence"]
+                }
 
+            json_response["data"]["profesional"] = values
 
-    json_response["data"]["pacients"] =  pacients
+    # Cleaning the data
+    for patient in patients:
+        for key, value in patient.items():
+            if key == "Nombre":
+                patient["Nombre"]["value"] = patient["Nombre"]["value"].replace("\n", " ")
+
+            else:
+                patient[key]["value"] = int(patient[key]["value"].replace(".", ""))
+
+    
+    json_response["data"]["pacients"] = patients
 
     return json_response
+            
+
