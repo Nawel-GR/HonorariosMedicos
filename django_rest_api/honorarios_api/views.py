@@ -99,12 +99,6 @@ def extract_information(data):
     # Getting the entities keys
     entities = google_decoded["document"]["entities"]
 
-    if DEBUG:
-        print("Entities keys")
-        for i in entities:
-            print(i['mentionText'])
-            print(i['type'])
-
     # Getting the entities keys values
 
     if clinic == "Clinica Alemana":
