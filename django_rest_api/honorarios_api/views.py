@@ -3,15 +3,15 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
-from .utils.mapping import map_clinic_alemana
+from .utils.mapping import map_clinic_alemana_cas_paid, map_clinic_alemana_cas_hours
 from .utils.crud_firebase import create_document, read_document, create_worked_day, read_document_reference, create_subcollection
 import json
 from .Connections.google_api import make_google_consult, make_json
 from drf_yasg.utils import swagger_auto_schema
 
 # import Json key
-from .keys.get_key import get_google_url, get_access_token_old
-
+from .keys.get_key import get_google_url_paids, get_access_token_old, get_google_url_class, get_google_url_hours
+from .utils.matcher import match_patients
 
 # Clinicas
 from firebase_admin import firestore
@@ -19,6 +19,7 @@ from firebase_admin import firestore
 from django.views.decorators.csrf import csrf_exempt
 
 DEBUG = True
+GOOGLE_KEY = get_access_token_old()
 
 class Create_Doctor(APIView):
     def post(self, request):
@@ -63,13 +64,101 @@ class File_extraction(APIView):
         if serializer.is_valid():
             #serializer.save()
             try:
-                return extract_information(serializer.data)
+                #return extract_pago_cas(serializer.data)
+                return classifier_document(serializer.data)
             except Exception as e:
                 return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+def classifier_document(data):
+    if DEBUG:
+        print("classifying document")
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    b64_file = data["binary"]
+    clinic = data["clinic"]
+    file_type = data["file_type"]
 
-def extract_information(data):
+    json_req = make_json(b64_file, file_type) # Making the json to the cloud request
+
+    # Send the jpg file to google
+    url = get_google_url_class() # Getting URL
+
+    # Receive the jpg file
+    response = make_google_consult(GOOGLE_KEY, json_req, url) # Making the request
+
+    response_decoded = json.loads(response.content) # Decoding the response
+
+    # Getting the entities keys
+    entities = response_decoded["document"]["entities"]
+
+    # Getting the entities keys values
+    class_id = {
+        "type": None,
+        "confidence": 0
+    } # Default value
+
+    for entity in entities:
+
+        if float(entity['confidence']) > class_id['confidence']:
+            class_id['type'] = entity['type']
+            class_id['confidence'] = entity['confidence']
+
+    #return Response(class_id['type'], status=status.HTTP_200_OK)
+    """
+    Modificar
+    """
+    if class_id['type'] == "Pago-CAS":
+        if DEBUG:
+            print("Pago CAS")
+        return extract_pago_cas(data)
+
+    elif class_id['type'] == "Atencion-CAS":
+        if DEBUG:
+            print("Atencion CAS")
+        return extract_pago_atencion(data)
+
+    else:
+        return Response("Document class not found", status=status.HTTP_400_BAD_REQUEST)
+    
+def extract_pago_atencion(data):
+
+    if DEBUG:
+        print("Received file")
+
+    b64_file = data["binary"]
+    med = data["med"]
+    clinic = data["clinic"]
+    file_type = data["file_type"]
+
+    json_test = make_json(b64_file, file_type)
+
+    url = get_google_url_hours() # send the jpg file
+
+    # Receive the jpg file
+    google_response = make_google_consult(GOOGLE_KEY, json_test, url)
+    google_decoded = json.loads(google_response.content)
+
+    if DEBUG:
+        print("Received Google Response")
+
+    entities = google_decoded["document"]["entities"] # Getting the entities keys
+
+    # Getting the entities keys values
+    if clinic == "Clinica Alemana":
+        response = map_clinic_alemana_cas_hours(entities)
+
+    else:
+        return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
+    
+    if DEBUG:
+        print("Data Mapped")
+        print(response)
+
+    return Response(response, status=status.HTTP_200_OK)
+
+
+def extract_pago_cas(data):
 
     if DEBUG:
         print("Received file")
@@ -81,38 +170,36 @@ def extract_information(data):
 
     json_test = make_json(b64_file, file_type)
 
-    # Send the jpg file to google
-    url = get_google_url()
+    url = get_google_url_paids() # Send the jpg file to google
 
-    google_key = get_access_token_old()
-
-    # Receive the jpg file
-
-    google_response = make_google_consult(google_key, json_test, url)
-
+    google_response = make_google_consult(GOOGLE_KEY, json_test, url) # Receive the jpg file
     google_decoded = json.loads(google_response.content)
 
     if DEBUG:
         print("Received Google Response")
 
-
-    # Getting the entities keys
-    entities = google_decoded["document"]["entities"]
+    entities = google_decoded["document"]["entities"] # Getting the entities keys
 
     # Getting the entities keys values
-
     if clinic == "Clinica Alemana":
-        response = map_clinic_alemana(entities)
+        response = map_clinic_alemana_cas_paid(entities)
 
     else:
-        response = "Clinic not supported"
+        return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
 
     if DEBUG:
         print("Data Mapped")
         print(response)
 
+    """
+    Matching section
+    In the future, implement a matching function that connects the data with the firebase database
+    now, all completed attentions will be send as matched
+    """
+    matched_response = match_patients(response)
+
     # return response
-    return Response(response, status=status.HTTP_200_OK)
+    return Response(matched_response, status=status.HTTP_200_OK)
 
 class File_upload(APIView):
     
