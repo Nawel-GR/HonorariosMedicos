@@ -4,7 +4,7 @@ from django.db import models
          
 # File model
 class File_model(models.Model):
-    binary = models.CharField(max_length=5000, default='')  # file on b64
+    binary = models.CharField(max_length=500000, default='')  # file on b64
     uploaded_at = models.DateTimeField(auto_now_add=True)
     med = models.CharField(max_length=100, default='') # med name
     clinic = models.CharField(max_length=100, default='') # clinic name
