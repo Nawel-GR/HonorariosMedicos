@@ -44,7 +44,7 @@ def make_json(base64, file_type):
     return {
     "skipHumanReview": "true",
     "rawDocument": {
-      "mimeType": f"application/{file_type}",
+      "mimeType": file_type,
       "content": f"{base64}"
     }
   }
