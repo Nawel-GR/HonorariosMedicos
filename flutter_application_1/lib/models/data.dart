@@ -6,7 +6,7 @@ class Professional {
 
   factory Professional.fromJson(Map<String, dynamic> json) {
     return Professional(
-      valor: json['valor'],
+      valor: json['value'],
       confidence: json['confidence'],
     );
   }
@@ -20,7 +20,7 @@ class Date {
 
   factory Date.fromJson(Map<String, dynamic> json) {
     return Date(
-      valor: json['valor'],
+      valor: json['value'],
       confidence: json['confidence'],
     );
   }
@@ -34,7 +34,7 @@ class TotalPaid {
 
   factory TotalPaid.fromJson(Map<String, dynamic> json) {
     return TotalPaid(
-      valor: json['valor'],
+      valor: json['value'],
       confidence: json['confidence'],
     );
   }
@@ -54,7 +54,7 @@ class Patient {
 
   factory Patient.fromJson(Map<String, dynamic> json) {
     return Patient(
-      nombre: json['nombre'],
+      nombre: json['name'],
       total: json['total'],
       opago: json['opago'],
       confidence: json['confidence'],
@@ -77,13 +77,13 @@ class ClinicData {
       required this.patients});
 
   factory ClinicData.fromJson(Map<String, dynamic> json) {
-    var professionalData = json['datos']['profesional'];
-    var dateData = json['datos']['date'];
-    var totalPaidData = json['datos']['total'];
-    var patientsData = json['datos']["pacients"];
+    var professionalData = json['data']['profesional'];
+    var dateData = json['data']['date'];
+    var totalPaidData = json['data']['total'];
+    var patientsData = json['data']["pacients"];
 
     return ClinicData(
-      clinica: json['clinica'],
+      clinica: json['clinic'],
       professional: Professional.fromJson(professionalData),
       date: Date.fromJson(dateData),
       totalPaid: TotalPaid.fromJson(totalPaidData),
