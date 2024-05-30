@@ -196,10 +196,10 @@ class ApiService {
   }
 
   Future obtainConsult() async {
-    await db.collection("consult").get().then((event) {
-      for (var doc in event.docs) {
-        print("${doc.id} => ${doc.data()}");
-      }
-    });
+    // await db.collection("consult").get().then((event) {
+    //   for (var doc in event.docs) {
+    //     print("${doc.id} => ${doc.data()}");
+    //   }
+    // });
   }
 }

@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DetailScreen extends StatelessWidget {
   ApiService apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DataCubit, DataState>(
@@ -20,6 +21,7 @@ class DetailScreen extends StatelessWidget {
           title: 'Detalle',
           body: Column(
             children: [
+              // Por Pagar Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -34,8 +36,9 @@ class DetailScreen extends StatelessWidget {
                           padding:
                               EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: HonorTheme.colors.primaryLight),
+                            borderRadius: BorderRadius.circular(20),
+                            color: HonorTheme.colors.primaryLight,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -66,16 +69,17 @@ class DetailScreen extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
-                height: 30,
-              ),
+              SizedBox(height: 30),
+              // Search Bar
               Container(
                 width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.7,
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: HonorTheme.colors.primaryLight),
+                  borderRadius: BorderRadius.circular(20),
+                  color: HonorTheme.colors.primaryLight,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -98,26 +102,65 @@ class DetailScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                   color: HonorTheme.colors.primaryVariantLight,
-                                  width: 1, // This is the line to add
+                                  width: 1,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                   color: HonorTheme.colors.white,
-                                  width: 1, // This is the line to add
+                                  width: 1,
                                 ),
                               ),
                             ),
                           ),
                         ),
                       ],
-                    )
+                    ),
+                    SizedBox(height: 20),
+                    // List Sections
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          Section(
+                            title: "Hoy",
+                            items: [
+                              ListItem(
+                                  color: Colors.red,
+                                  text: "Clinica A Archivo N°7:",
+                                  amount: "x.xxx.xxx"),
+                              ListItem(
+                                  color: Colors.yellow,
+                                  text: "Clinica B Archivo N°x:",
+                                  amount: "x.xxx.xxx"),
+                            ],
+                          ),
+                          Section(
+                            title: "Ayer",
+                            items: [
+                              ListItem(
+                                  color: Colors.green,
+                                  text: "Clinica C Archivo N°x:",
+                                  amount: "x.xxx.xxx"),
+                              ListItem(
+                                  color: Colors.green,
+                                  text: "Clinica D Archivo N°x:",
+                                  amount: "x.xxx.xxx"),
+                              ListItem(
+                                  color: Colors.green,
+                                  text: "Clinica A Archivo N°x:",
+                                  amount: "x.xxx.xxx"),
+                              ListItem(
+                                  color: Colors.green,
+                                  text: "Clinica B Archivo N°x:",
+                                  amount: "x.xxx.xxx"),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 50,
               ),
             ],
           ),
@@ -125,4 +168,45 @@ class DetailScreen extends StatelessWidget {
       },
     );
   }
+}
+
+class Section extends StatelessWidget {
+  final String title;
+  final List<ListItem> items;
+
+  Section({required this.title, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Center(
+            child: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
+        ...items.map((item) => Card(
+              child: ListTile(
+                leading: Container(
+                  width: 5,
+                  color: item.color,
+                ),
+                title: Text(item.text),
+                trailing: Text("\$ ${item.amount}"),
+              ),
+            )),
+        SizedBox(height: 10),
+      ],
+    );
+  }
+}
+
+class ListItem {
+  final Color color;
+  final String text;
+  final String amount;
+
+  ListItem({required this.color, required this.text, required this.amount});
 }
