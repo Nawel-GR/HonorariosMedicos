@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_app/api/api_service.dart';
 import 'package:flutter_app/bloc/data/data_cubit.dart';
 import 'package:flutter_app/screens/layout/header.dart';
+import 'package:flutter_app/screens/match_state.dart';
 import 'package:flutter_app/theme/honor_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -187,14 +188,24 @@ class Section extends StatelessWidget {
             child: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
-        ...items.map((item) => Card(
-              child: ListTile(
-                leading: Container(
-                  width: 5,
-                  color: item.color,
+        ...items.map((item) => InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetalleArchivoPage(),
+                  ),
+                );
+              },
+              child: Card(
+                child: ListTile(
+                  leading: Container(
+                    width: 5,
+                    color: item.color,
+                  ),
+                  title: Text(item.text),
+                  trailing: Text("\$ ${item.amount}"),
                 ),
-                title: Text(item.text),
-                trailing: Text("\$ ${item.amount}"),
               ),
             )),
         SizedBox(height: 10),
