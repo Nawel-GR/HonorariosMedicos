@@ -348,4 +348,4 @@ def firebase_upload_pago(data, clinic, professional_id):
 
     
 
-    return Response("Data uploaded", status=status.HTTP_200_OK)
+    return Response(l_parsed, status=status.HTTP_200_OK)
