@@ -3,8 +3,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
-from .utils.mapping import map_clinic_alemana_cas_paid, map_clinic_alemana_cas_hours
-from .utils.crud_firebase import create_document, read_document, create_worked_day, read_document_reference, create_subcollection
 import json
 from .Connections.google_api import make_google_consult, make_json
 from drf_yasg.utils import swagger_auto_schema
@@ -15,8 +13,12 @@ from .utils.matcher import match_patients
 
 # Clinicas
 from firebase_admin import firestore
-
 from django.views.decorators.csrf import csrf_exempt
+
+# Utils
+from .utils.mapping import map_clinic_alemana_cas_paid, map_clinic_alemana_cas_hours
+from .utils.crud_firebase import create_document, read_document, create_worked_day, read_document_reference, create_subcollection, update_document
+from .utils.parser import parse_date, parse_date_2
 
 DEBUG = True
 GOOGLE_KEY = get_access_token_old()
@@ -64,7 +66,7 @@ class File_extraction(APIView):
         if serializer.is_valid():
             #serializer.save()
             try:
-                #return extract_pago_cas(serializer.data)
+                #return extract_CAS_pago(serializer.data)
                 return classifier_document(serializer.data)
             except Exception as e:
                 return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
@@ -111,23 +113,26 @@ def classifier_document(data):
     if class_id['type'] == "Pago-CAS":
         if DEBUG:
             print("Pago CAS")
-        return extract_pago_cas(data)
+            
+        return extract_CAS_pago(data)
 
     elif class_id['type'] == "Atencion-CAS":
         if DEBUG:
             print("Atencion CAS")
-        return extract_pago_atencion(data)
+        return extract_CAS_atencion(data)
 
     else:
         return Response("Document class not found", status=status.HTTP_400_BAD_REQUEST)
     
-def extract_pago_atencion(data):
+def extract_CAS_atencion(data):
 
     if DEBUG:
         print("Received file")
 
     b64_file = data["binary"]
     med = data["med"]
+    print("MED DATA INFORMATION")
+    print(f"Med : {med}")
     clinic = data["clinic"]
     file_type = data["file_type"]
 
@@ -157,8 +162,7 @@ def extract_pago_atencion(data):
 
     return Response(response, status=status.HTTP_200_OK)
 
-
-def extract_pago_cas(data):
+def extract_CAS_pago(data):
 
     if DEBUG:
         print("Received file")
@@ -195,75 +199,153 @@ def extract_pago_cas(data):
     Matching section
     In the future, implement a matching function that connects the data with the firebase database
     now, all completed attentions will be send as matched
-    """
+    
     matched_response = match_patients(response)
+    """
 
     # return response
-    return Response(matched_response, status=status.HTTP_200_OK)
+    return Response(response, status=status.HTTP_200_OK)
 
-class File_upload(APIView):
-    
+class new_file_upload(APIView):
     def post(self, request):
 
         data = request.data
 
-        # Getting the data
-        clinic = data["clinic"] #Exists
+        # Getting Type
+        type_ = data["type"]
 
-        #TODO create get clinic id
-        clinic_id = "001"
+        if type_ == "Atencion-CAS":
+            print('Atencion CAS')
+            return firebase_upload_atencion(data['data'], data['clinic'], data["professional"])
 
-        professional = data["data"]["profesional"]["value"]
-        code_id = professional.split("-")[0][:-4]
+        elif type_ == "Pago-CAS":
+            print('Pago CAS')
+            return firebase_upload_pago(data['data'], data['clinic'], data["professional"])
+        else:
+            return Response("Type not found", status=status.HTTP_400_BAD_REQUEST)
+    
 
-        profesional_id = f"{code_id}{clinic_id}"
+def firebase_upload_atencion(data, clinic, professional_id):
 
-        date = data["data"]["date"]["value"]
+    if clinic != "Clinica Alemana":
+        return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
+    
+    clinic_id = "001" #TODO get clinic id
 
-        #TODO create a get date
-        date_o = date.split(" ")[1].replace('/', '')
-        date_yymmdd = f"{date_o[6:]}{date_o[2:4]}{date_o[:2]}"
+    # Getting the date
+    date = data["date"]['value']
+    date = parse_date(date)
 
+    # Getting the patients
+    patients = data["patients"]
 
-        total = data["data"]["total"]["value"]
+    patients_to_firebase = []
 
-        # Create worked day
-        doc_name = f"{profesional_id}{date_yymmdd}"
-        create_worked_day(profesional_id, clinic_id, doc_name)
-
-        print(f"WORKDED DAY CREATED {doc_name}")
-
-        worked_day_ref = read_document_reference("worked_day", doc_name)
-
-        
-        # Adding patients
-        patient_list = data["data"]["pacients"]
-
-        i = 1
-        for patient in patient_list:
-            name = patient["name"]
+    for patient in patients:
+        if patient['Estado']['value'] == "Completado":
+            name = patient['Nombre']['value']
             name = name.split(" ")
-
-            # get first letters and make a string
             name = "".join([i[0] for i in name])
-            
+
             if len(name) < 4:
                 name+='x'
 
             #TODO ORDER THE NAMES AND LASTNAMES
-            values ={
-                "names" : patient["name"],
+            patients_to_firebase.append(name)
+           
+
+    ############################# Uploading to Firebase #############################
+    if DEBUG:
+        print("Patients to firebase")
+        print(patients_to_firebase)
+        print(f"Professional ID: {professional_id}")
+
+    # Create worked day
+    doc_name = f"{professional_id}{clinic_id}{date}"
+    
+    create_worked_day(str(professional_id), clinic_id, doc_name)
+
+    print(f"WORKDED DAY CREATED {doc_name}")
+
+    worked_day_ref = read_document_reference("worked_day", doc_name)  # Getting the reference
+
+    # Adding patients
+    i = 1
+    for patient in patients_to_firebase:
+        worked_name = f"{patient}{professional_id}{date}"
+
+        values ={
+                "names" : patient,
+                "pagado" : 0, #0: not paid, 1: paid, 2:conflict
             }
 
-            worked_name = f"{name}{profesional_id}{date_yymmdd}"
+        create_document("consults", values, worked_name)
 
-            create_document("consult", values, worked_name)
-
-            p_ref = read_document_reference("consult", worked_name)
+        p_ref = read_document_reference("consults", worked_name)
 
 
-            create_subcollection(worked_day_ref, "dayconsults", str(i), {"consult_ref" : p_ref})
-            i+=1
+        create_subcollection(worked_day_ref, "dayconsults", str(i), {"consult_ref" : p_ref})
+        i+=1
 
+    return Response("Data uploaded", status=status.HTTP_200_OK)
 
-        return Response("File uploaded", status=status.HTTP_200_OK)
+def firebase_upload_pago(data, clinic, professional_id):
+
+    if clinic != "Clinica Alemana":
+        return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
+    
+    clinic_id = "001" #TODO get clinic id
+
+    date = data["date"]['value']
+    date = parse_date_2(date) # TODO better parser
+
+    total_Total = data["total"]['Total']['value']
+    total_Descuento = data["total"]['Descuento']['value']
+    total_Valor = data["total"]['Valor']['value']
+
+    # Upload the total values to worked day
+    doc_name = f"{professional_id}{clinic_id}{date}"
+    worked_day_ref = read_document_reference("worked_day", doc_name)  # Getting the reference
+
+    update_data = {
+        "total_Total" : total_Total,
+        "total_Descuento" : total_Descuento,
+        "total_Valor" : total_Valor
+    }
+
+    update_document("worked_day", doc_name, update_data)  # Updating informartion
+
+    # Iterate over the patients
+    patients = data["patients"]
+    l_parsed = {}
+
+    for patient in patients:
+        name = patient['Nombre']['value']
+        name = name.split(" ")
+        name = "".join([i[0] for i in name])
+
+        if len(name) < 4: #TODO better name extraction
+            name+='x'
+
+        l_parsed[name] = {
+            "Descuento" : patient['Descuento']['value'],
+            "Total" : patient['Total']['value'],
+            "Valor" : patient['Valor']['value']
+        }
+
+    # TODO in case that patients doesn't exists
+
+    for key, value in l_parsed.items():
+        doc_name = f"{key}{professional_id}{date}"
+        update_data = {
+            "pagado" : 1,
+            "total" : value["Total"],
+            "descuento" : value["Descuento"],
+            "valor" : value["Valor"]
+        }
+
+        update_document("consults", doc_name, update_data)
+
+    
+
+    return Response("Data uploaded", status=status.HTTP_200_OK)

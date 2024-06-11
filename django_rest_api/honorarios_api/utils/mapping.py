@@ -8,6 +8,7 @@ def map_clinic_alemana_cas_paid(entities):
     # Create a empty json
     json_response = {
         "clinic" : "Clinica Alemana",
+        "type" : "Pagos-CAS",
         "data" : {
 
         }
@@ -87,6 +88,7 @@ def map_clinic_alemana_cas_hours(entities):
     # Create a empty json
     json_response = {
         "clinic" : "Clinica Alemana",
+        "type" : "Atencion-CAS",
         "data" : {
 
         }
