@@ -1,12 +1,14 @@
 """
-Crud operations to firebase DDBB
+Crud operations to firebase DDBB connection
+consult with nahuel.gomez@ug.uchile.cl for more information.
 """
 from firebase_admin import firestore
 
-# Read a document from Firestore
 def read_document(collection, document_id):
-    """
-    Args : 
+    """ Reads a document from Firestore
+    Args:
+        collection (str): Collection's document name
+        document_id (str): Document ID
     """
     try:
         db = firestore.client()
@@ -19,10 +21,14 @@ def read_document(collection, document_id):
     except:
         return 0
 
-# get a document reference from Firestore
 def read_document_reference(collection, document_id):
-    """
-    Args : 
+    """ Gets a document reference from Firestore by the document ID
+    Args:
+        collection (str): Collection's document name
+        document_id (str): Document ID 
+
+    Returns:
+        doc_ref (DocumentReference): Document reference
     """
     try:
         db = firestore.client()
@@ -32,10 +38,13 @@ def read_document_reference(collection, document_id):
     except:
         return None
     
-# create a subcollection
 def create_subcollection(doc_ref, subcollection_name, document_name, params):
-    """
-    Args : 
+    """ Creates a subcollection
+    Args:
+        doc_ref (DocumentReference): Document reference
+        subcollection_name (str): Subcollection name
+        document_name (str): Document name
+        params (dict): Dictionary with the parameters 
     """
     try:
         subcollection = doc_ref.collection(subcollection_name).document(document_name)
@@ -43,8 +52,14 @@ def create_subcollection(doc_ref, subcollection_name, document_name, params):
     except Exception as e:
         print(e)
 
-# Create a new document in Firestore
 def create_document(collection, document_data, document_name):
+    """ Creates a document in Firestore
+    
+    Args:
+        collection (str): Collection's document name
+        document_data (dict): Dictionary with the document data
+        document_name (str): Document name
+    """
     try:
         db = firestore.client()
         doc_ref = db.collection(collection).document(document_name)
@@ -54,8 +69,15 @@ def create_document(collection, document_data, document_name):
         print("consulta no creada")
         print(e)
 
-# Update a document in Firestore
+
 def update_document(collection, document_id, update_data):
+    """ Updates a document in Firestore
+    
+    Args:
+        collection (str): Collection's document name
+        document_id (str): Document ID
+        update_data (dict): Dictionary with the data to update
+    """
     try:
         db = firestore.client()
         doc_ref = db.collection(collection).document(document_id)
@@ -64,14 +86,26 @@ def update_document(collection, document_id, update_data):
     except Exception as e:
         print(e)
 
-# Delete a document from Firestore
 def delete_document(collection, document_id):
+    """ Deletes a document from Firestore
+
+    Args:
+        collection (str): Collection's document name
+        document_id (str): Document ID
+    """
     db = firestore.client()
     doc_ref = db.collection(collection).document(document_id)
     doc_ref.delete()
     print('Document deleted successfully!')
 
 def create_worked_day(doctor_id, clinic_id, document_name):
+    """ Creates a worked day document in Firestore
+    
+    Args:
+        doctor_id (str): Doctor's ID
+        clinic_id (str): Clinic's ID
+        document_name (str): Document name
+    """
     db = firestore.client()
 
     doctor_ref = db.collection("doctors").document(doctor_id)

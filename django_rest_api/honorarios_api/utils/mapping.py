@@ -4,6 +4,10 @@ THRESHOLD = 0.2
 DEBUG = True
 
 def map_clinic_alemana_cas_paid(entities):
+    """ Extracts the information of the CGP extractors.
+    Consult with nahuel.gomez@ug.uchile.cl for more information.
+    
+    """
 
     # Create a empty json
     json_response = {
@@ -15,12 +19,12 @@ def map_clinic_alemana_cas_paid(entities):
     }
 
     patients = []
-
     for entity in entities:
         if DEBUG:
             print("ENTITY VALUE:")
             print(entity)
             print("END")
+        
         type_entity = entity["type"]
         confidence_entity = entity["confidence"]
 
@@ -84,6 +88,9 @@ def map_clinic_alemana_cas_paid(entities):
             
 
 def map_clinic_alemana_cas_hours(entities):
+    """ Extracts the information of the CGP extractors.
+    
+    """
 
     # Create a empty json
     json_response = {
