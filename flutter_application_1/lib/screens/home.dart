@@ -1,9 +1,11 @@
+import 'package:camera/camera.dart';
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/api_service.dart';
 import 'package:flutter_app/bloc/bloc.dart';
+import 'package:flutter_app/screens/camera.dart';
 import 'package:flutter_app/screens/detail.dart';
 import 'package:flutter_app/screens/layout/header.dart';
 import 'package:flutter_app/screens/values.dart';
@@ -66,34 +68,134 @@ class HomeScreen extends StatelessWidget {
                   child: CircularIconButton(
                 icon: CupertinoIcons.cloud_upload,
                 onPressed: () async {
-                  try {
-                    await FilePicker.platform
-                        .pickFiles(type: FileType.custom, allowedExtensions: [
-                      'pdf',
-                    ]).then((value) async {
-                      if (value != null) {
-                        DialogUtils.showSpinner(text: "Enviando imagen");
-                        await context.read<DataCubit>().postData().then(
-                          (_) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ValuesScreen(
-                                      users: context
+                  DialogUtils.showModal(context,
+                      title: 'Subir archivo',
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () async {
+                                try {
+                                  await FilePicker.platform.pickFiles(
+                                      type: FileType.custom,
+                                      allowedExtensions: [
+                                        'pdf',
+                                      ]).then((value) async {
+                                    if (value != null) {
+                                      DialogUtils.showSpinner(
+                                          text: "Enviando imagen");
+                                      await context
                                           .read<DataCubit>()
-                                          .state
-                                          .clinicData!
-                                          .patients)),
-                            );
-                          },
-                        );
-                      }
-                    });
-                  } catch (e) {
-                    print(e);
-                    PLog.red('Error al seleccionar el archivo: $e');
-                  }
-                  DialogUtils.closeSpinner();
+                                          .postData()
+                                          .then(
+                                        (_) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ValuesScreen(
+                                                        users: context
+                                                            .read<DataCubit>()
+                                                            .state
+                                                            .clinicData!
+                                                            .patients)),
+                                          );
+                                        },
+                                      );
+                                    }
+                                  });
+                                } catch (e) {
+                                  print(e);
+                                  PLog.red(
+                                      'Error al seleccionar el archivo: $e');
+                                }
+                                DialogUtils.closeSpinner();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: HonorTheme.colors.primaryLight,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Icon(CupertinoIcons.archivebox,
+                                          color: HonorTheme.colors.darkLight,
+                                          size: 30),
+                                    ),
+                                    EasyRichText(
+                                      'Subir archivo desde dispositivo',
+                                    ),
+                                    SizedBox(width: 5),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () async {
+                                // Obtain a list of the available cameras on the device.
+                                try {
+                                  WidgetsFlutterBinding.ensureInitialized();
+                                  DialogUtils.showSpinner(
+                                      text: "Abriendo camara");
+                                  final cameras = await availableCameras();
+
+                                  // Get a specific camera from the list of available cameras.
+                                  final firstCamera = cameras.first;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TakePictureScreen(
+                                        camera: firstCamera,
+                                      ),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  print(e);
+                                  PLog.red('Error al abrir la camara: $e');
+                                }
+                                DialogUtils.closeSpinner();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: HonorTheme.colors.primaryLight,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Icon(CupertinoIcons.camera,
+                                          color: HonorTheme.colors.darkLight,
+                                          size: 30),
+                                    ),
+                                    EasyRichText(
+                                      'Subir archivo desde camara',
+                                    ),
+                                    SizedBox(width: 5),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ));
                 },
                 color: HonorTheme.colors.primaryLight,
                 size: MediaQuery.of(context).size.height * 0.35,
