@@ -24,6 +24,9 @@ DEBUG = True
 GOOGLE_KEY = get_access_token_old()
 
 class Create_Doctor(APIView):
+    """Function to create a doctor on the Firebase database
+        
+    """
     def post(self, request):
 
         data = request.data
@@ -64,9 +67,8 @@ class File_extraction(APIView):
     def post(self, request):
         serializer = File_serializer(data=request.data)
         if serializer.is_valid():
-            #serializer.save()
+            #serializer.save() # Save the file in the local database
             try:
-                #return extract_CAS_pago(serializer.data)
                 return classifier_document(serializer.data)
             except Exception as e:
                 return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
@@ -74,12 +76,17 @@ class File_extraction(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 def classifier_document(data):
+    """ Function to classify the document by 2 categories:
+        - Pago-CAS (CLINICA ALEMANA)
+        - Atencion (CLINICA ALEMANA)
+    """
+    
     if DEBUG:
         print("classifying document")
 
-    b64_file = data["binary"]
-    clinic = data["clinic"]
-    file_type = data["file_type"]
+    b64_file = data["binary"] # Getting the binary file
+    clinic = data["clinic"] # Getting the clinic
+    file_type = data["file_type"] # Getting the file type
 
     json_req = make_json(b64_file, file_type) # Making the json to the cloud request
 
@@ -101,15 +108,15 @@ def classifier_document(data):
     } # Default value
 
     for entity in entities:
-
         if float(entity['confidence']) > class_id['confidence']:
             class_id['type'] = entity['type']
             class_id['confidence'] = entity['confidence']
 
-    #return Response(class_id['type'], status=status.HTTP_200_OK)
     """
-    Modificar
+    ¡¡¡INCLUDE TRY EXCEPT!!!
     """
+    
+    # After the clasification. Sends the data to the correct function
     if class_id['type'] == "Pago-CAS":
         if DEBUG:
             print("Pago CAS")
@@ -125,20 +132,25 @@ def classifier_document(data):
         return Response("Document class not found", status=status.HTTP_400_BAD_REQUEST)
     
 def extract_CAS_atencion(data):
+    """ Sends the data to GCP and returns the data mapped
+    Args:
+        data (dict): Data from the request
+    
+    """
 
     if DEBUG:
         print("Received file")
 
+    # Extracts the information from the data
     b64_file = data["binary"]
-    med = data["med"]
-    print("MED DATA INFORMATION")
-    print(f"Med : {med}")
+    #med = data["med"]
     clinic = data["clinic"]
     file_type = data["file_type"]
 
-    json_test = make_json(b64_file, file_type)
+    json_test = make_json(b64_file, file_type)  # makes a json with the information
 
-    url = get_google_url_hours() # send the jpg file
+    # sends the jpg file to the specific url GCP extractor.
+    url = get_google_url_hours() 
 
     # Receive the jpg file
     google_response = make_google_consult(GOOGLE_KEY, json_test, url)
@@ -163,28 +175,34 @@ def extract_CAS_atencion(data):
     return Response(response, status=status.HTTP_200_OK)
 
 def extract_CAS_pago(data):
+    """ Sends the data to GCP and returns the data mapped
+    Args:
+        data (dict): Data from the request
+    
+    """
 
     if DEBUG:
         print("Received file")
     
+    # Extracts the information from the data
     b64_file = data["binary"]
-    med = data["med"]
+    #med = data["med"]
     clinic = data["clinic"]
     file_type = data["file_type"]
 
-    json_test = make_json(b64_file, file_type)
+    json_test = make_json(b64_file, file_type)# makes a json with the information
 
-    url = get_google_url_paids() # Send the jpg file to google
+    url = get_google_url_paids() # Send the jpg file to GCP extractor
 
     google_response = make_google_consult(GOOGLE_KEY, json_test, url) # Receive the jpg file
-    google_decoded = json.loads(google_response.content)
+    google_decoded = json.loads(google_response.content) # Decoding the response
 
     if DEBUG:
         print("Received Google Response")
 
     entities = google_decoded["document"]["entities"] # Getting the entities keys
 
-    # Getting the entities keys values
+    # Getting the entities keys values. ASUMING THAT THE CLINIC IS CLINICA ALEMANA
     if clinic == "Clinica Alemana":
         response = map_clinic_alemana_cas_paid(entities)
 
@@ -207,25 +225,32 @@ def extract_CAS_pago(data):
     return Response(response, status=status.HTTP_200_OK)
 
 class new_file_upload(APIView):
-    def post(self, request):
+    """ Class to upload the data extracted from the files to the firebase database
+    """
 
+    def post(self, request):
         data = request.data
 
         # Getting Type
         type_ = data["type"]
 
-        if type_ == "Atencion-CAS":
+        if type_ == "Atencion-CAS": # upload Atencion CAS
             print('Atencion CAS')
             return firebase_upload_atencion(data['data'], data['clinic'], data["professional"])
 
-        elif type_ == "Pago-CAS":
+        elif type_ == "Pago-CAS": # upload Pago CAS
             print('Pago CAS')
             return firebase_upload_pago(data['data'], data['clinic'], data["professional"])
         else:
             return Response("Type not found", status=status.HTTP_400_BAD_REQUEST)
     
-
 def firebase_upload_atencion(data, clinic, professional_id):
+    """ Upload the data to the firebase database.
+    Args:
+        data (dict): Data extracted from the file
+        clinic (str): Clinic name
+        professional_id (str): MED ID
+    """
 
     if clinic != "Clinica Alemana":
         return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
@@ -234,15 +259,16 @@ def firebase_upload_atencion(data, clinic, professional_id):
 
     # Getting the date
     date = data["date"]['value']
-    date = parse_date(date)
+    date = parse_date(date) # TODO better parser
 
     # Getting the patients
-    patients = data["patients"]
+    patients = data["patients"] 
 
     patients_to_firebase = []
 
-    for patient in patients:
+    for patient in patients:  # iterating over the patients
         if patient['Estado']['value'] == "Completado":
+
             name = patient['Nombre']['value']
             name = name.split(" ")
             name = "".join([i[0] for i in name])
@@ -253,21 +279,17 @@ def firebase_upload_atencion(data, clinic, professional_id):
             #TODO ORDER THE NAMES AND LASTNAMES
             patients_to_firebase.append(name)
            
-
-    ############################# Uploading to Firebase #############################
     if DEBUG:
         print("Patients to firebase")
         print(patients_to_firebase)
         print(f"Professional ID: {professional_id}")
 
-    # Create worked day
+    # Create worked day on firebase
     doc_name = f"{professional_id}{clinic_id}{date}"
-    
     create_worked_day(str(professional_id), clinic_id, doc_name)
-
     print(f"WORKDED DAY CREATED {doc_name}")
 
-    worked_day_ref = read_document_reference("worked_day", doc_name)  # Getting the reference
+    worked_day_ref = read_document_reference("worked_day", doc_name)  # Getting the reference of 'worked day'
 
     # Adding patients
     i = 1
@@ -279,17 +301,22 @@ def firebase_upload_atencion(data, clinic, professional_id):
                 "pagado" : 0, #0: not paid, 1: paid, 2:conflict
             }
 
+        # Create the document on firebase
         create_document("consults", values, worked_name)
-
         p_ref = read_document_reference("consults", worked_name)
-
-
         create_subcollection(worked_day_ref, "dayconsults", str(i), {"consult_ref" : p_ref})
+
         i+=1
 
     return Response("Data uploaded", status=status.HTTP_200_OK)
 
 def firebase_upload_pago(data, clinic, professional_id):
+    """ Upload the data to the firebase database.
+    Args:
+        data (dict): Data extracted from the file
+        clinic (str): Clinic name
+        professional_id (str): MED ID
+    """
 
     if clinic != "Clinica Alemana":
         return Response("Clinic not found", status=status.HTTP_400_BAD_REQUEST)
@@ -299,6 +326,7 @@ def firebase_upload_pago(data, clinic, professional_id):
     date = data["date"]['value']
     date = parse_date_2(date) # TODO better parser
 
+    # Getting the total values
     total_Total = data["total"]['Total']['value']
     total_Descuento = data["total"]['Descuento']['value']
     total_Valor = data["total"]['Valor']['value']
@@ -334,7 +362,6 @@ def firebase_upload_pago(data, clinic, professional_id):
         }
 
     # TODO in case that patients doesn't exists
-
     for key, value in l_parsed.items():
         doc_name = f"{key}{professional_id}{date}"
         update_data = {
@@ -344,8 +371,6 @@ def firebase_upload_pago(data, clinic, professional_id):
             "valor" : value["Valor"]
         }
 
-        update_document("consults", doc_name, update_data)
-
-    
+        update_document("consults", doc_name, update_data) # To firebase
 
     return Response(l_parsed, status=status.HTTP_200_OK)
