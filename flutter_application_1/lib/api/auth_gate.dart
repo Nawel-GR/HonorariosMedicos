@@ -10,6 +10,7 @@ typedef HeaderBuilder = Widget Function(
   double shrinkOffset,
 );
 
+// Method to use the firebase authentification with email
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
