@@ -65,7 +65,7 @@ Es necesario mantener las llaves de acceso a firebase y google en una carpeta fu
 
 ## Ayuda
 
-Para solicitar las credenciales:
+Para solicitar las credenciales y ambiente POSTMAN:
 
 Nahuel Gomez: nahuel.rag@ug.uchile.cl
 
