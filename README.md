@@ -63,4 +63,10 @@ flutter run
 Es necesario mantener las llaves de acceso a firebase y google en una carpeta fuera de github ya que son privadas, estas estan en un archivo separado que no esta subido aquí sin este la aplicación no puede acceder a la base de datos, ni a la IA de manipulación de texto
 
 
+## Ayuda
 
+Para solicitar las credenciales:
+
+Nahuel Gomez: nahuel.rag@ug.uchile.cl
+
+Diego Navarrete: dinavarrete@ug.uchile.cl
