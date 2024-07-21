@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'data_state.dart';
 
+// Cubit that handles the data state, basically the data that is going to be shown in the app
 class DataCubit extends Cubit<DataState> {
   final ApiService _apiService = ApiService();
 
